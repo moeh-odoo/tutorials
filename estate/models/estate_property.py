@@ -21,7 +21,7 @@ class estateProperty(models.Model):
         selection=[('North', 'north'), ('South', 'south'), ('East','east'), ('West','west')]
     )
     state = fields.Selection(
-        selection = [('New','New'), ('Received','Received'), ('Accepted','Accepted'), ('Sold','Sold'), ('Canceled','Canceled')],
+        selection = [('New',''), ('Received',''), ('Accepted',''), ('Sold',''), ('Canceled','')],
         required = True,
         copy = False,
         default = 'New'
