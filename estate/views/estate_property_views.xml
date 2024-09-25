@@ -29,7 +29,12 @@
                 <sheet>
                     <h1><field name="name"/></h1>
                     <group>
+                        <field name="estate_property_tag_id" widget="many2many_tags"/>
+
+                    </group>
+                    <group>
                         <group>
+                            <field name="estate_property_type_id" string="Property Type"/>
                             <field name="postcode"/>
                             <field name="date_availability" string="Available From"/>
                         </group>
@@ -53,6 +58,17 @@
                                 <field name="garden_orientation"/>
                                 <field name="Active"/>
                                 <field name="state"/>
+                            </group>
+                        </page>
+                        <page string="Offers">
+                            <group>
+                                <field name="offer_ids" string="offers"/>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <field name="sales_person_id" string="Salesman"/>
+                                <field name="buyer_id" string="Buyer"/>
                             </group>
                         </page>
                     </notebook>

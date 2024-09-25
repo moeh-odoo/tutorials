@@ -17,6 +17,11 @@ class estateProperty(models.Model):
     garden = fields.Boolean()
     garden_area = fields.Integer()
     Active = fields.Boolean(default=True)
+    estate_property_type_id = fields.Many2one("estate_property_type",string = "property type")
+    buyer_id = fields.Many2one("res.partner", string="Buyer", copy=False)
+    sales_person_id = fields.Many2one("res.users", string="Sales")
+    estate_property_tag_id = fields.Many2many("estate_property_tag", string="Property Tags")
+    offer_ids = fields.One2many("estate_property_offer","property_id",string="offer")
     garden_orientation = fields.Selection(
         selection=[('North', 'north'), ('South', 'south'), ('East','east'), ('West','west')]
     )
