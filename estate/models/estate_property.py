@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 class estateProperty(models.Model):
     _name = "estate_property"
@@ -23,6 +24,16 @@ class estateProperty(models.Model):
     estate_property_tag_id = fields.Many2many("estate_property_tag", string="Property Tags")
     offer_ids = fields.One2many("estate_property_offer","property_id",string="offer") # [21,23,24].mapped
     total_area = fields.Float(compute="_compute_total")
+    state = fields.Selection(
+        selection=[('new', 'New'), 
+                ('received', 'Received'), 
+                ('accepted', 'Accepted'), 
+                ('sold', 'Sold'), 
+                ('canceled', 'Canceled')],
+        required=True,
+        default='new',
+        string="Status"
+    )
 
     @api.depends("garden_area","living_area")
     def _compute_total(self):
@@ -33,7 +44,6 @@ class estateProperty(models.Model):
 
     @api.depends('offer_ids.price')
     def _compute_best_price(self):
-        print('hello')
         for record in self:
             print(record)
             if record.offer_ids:
@@ -49,13 +59,21 @@ class estateProperty(models.Model):
         else:
             self.garden_area = 0
             self.garden_orientation = False
-            
+
     garden_orientation = fields.Selection(
         selection=[('North', 'north'), ('South', 'south'), ('East','east'), ('West','west')]
     )
-    state = fields.Selection(
-        selection = [('New',''), ('Received',''), ('Accepted',''), ('Sold',''), ('Canceled','')],
-        required = True,
-        copy = False,
-        default = 'New'
-    )
+
+    def action_set_sold(self):
+        for record in self:
+            if record.state == 'canceled':
+                raise UserError("Canceled properties cannot be marked as sold.")
+            record.state = 'sold'
+        return True
+
+    def action_set_cancel(self):
+        for record in self:
+            if record.state == 'sold':
+                raise UserError("Sold properties cannot be canceled.")
+            record.state = 'canceled'
+        return True
