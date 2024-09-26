@@ -1,5 +1,7 @@
 from odoo import api, fields, models
 from datetime import date
+from odoo.exceptions import UserError
+
 class estatePropertyOffer(models.Model):
     _name = "estate_property_offer"
     _description = "Estate Property Offer"
@@ -29,3 +31,15 @@ class estatePropertyOffer(models.Model):
 
     partner_id = fields.Many2one("res.partner", required = True)
     property_id = fields.Many2one("estate_property",required = True)
+
+
+    def action_to_accept(self):
+        for record in self:
+            record.status = "Accepted"
+            record.property_id.selling_price = record.price
+            record.property_id.buyer_id = record.partner_id
+
+
+    def action_to_refuse(self):
+        for record in self:
+            record.status = "Refused"
