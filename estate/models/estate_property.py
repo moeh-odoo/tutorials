@@ -34,13 +34,20 @@ class estateProperty(models.Model):
         default='new',
         string="Status"
     )
+    best_price = fields.Float(compute="_compute_best_price")
+    garden_orientation = fields.Selection(
+        selection=[('North', 'north'), ('South', 'south'), ('East','east'), ('West','west')]
+    )
+    _sql_constraints = [
+        ('check_selling_price', 'CHECK(selling_price >= 0)', 'The selling price must be positive'),
+        ('check_expected_price', 'CHECK(expected_price > 0)', 'The expected price must be strictly positive'),
+        ('check_name', 'unique(name)', 'The name must be unique')
+    ]
 
     @api.depends("garden_area","living_area")
     def _compute_total(self):
         for record in self:
             record.total_area = record.garden_area + record.living_area;
-
-    best_price = fields.Float(compute="_compute_best_price")
 
     @api.depends('offer_ids.price')
     def _compute_best_price(self):
@@ -59,10 +66,6 @@ class estateProperty(models.Model):
         else:
             self.garden_area = 0
             self.garden_orientation = False
-
-    garden_orientation = fields.Selection(
-        selection=[('North', 'north'), ('South', 'south'), ('East','east'), ('West','west')]
-    )
 
     def action_set_sold(self):
         for record in self:
